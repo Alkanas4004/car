@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="تطبيق Esy Way - تقييم الرحلة">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Esy Way - تقييم</title>
+    
+    <!-- الخطوط والأيقونات -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- ملف التنسيق الرئيسي -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        /* ===== تنسيقات صفحة التقييم ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: radial-gradient(circle at 30% 20%, #0a0a0a, #000);
+            font-family: 'Tajawal', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .rating-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* بطاقة التقييم */
+        .rating-card {
+            background: rgba(17, 17, 17, 0.8);
+            backdrop-filter: blur(15px);
+            border: 2px solid #FFD700;
+            border-radius: 60px;
+            padding: 35px 25px;
+            box-shadow: 0 0 50px rgba(255,215,0,0.2);
+        }
+        
+        /* رأس البطاقة */
+        .rating-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .rating-icon {
+            font-size: 3.5rem;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+        .rating-title {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+        }
+        .rating-sub {
+            color: #ccc;
+            margin-top: 5px;
+        }
+        
+        /* معلومات السائق */
+        .driver-info-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 50px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border: 1px solid #FFD700;
+        }
+        .driver-avatar {
+            width: 70px;
+            height: 70px;
+            background: #333;
+            border-radius: 35px;
+            border: 3px solid #FFD700;
+            background-size: cover;
+            background-position: center;
+        }
+        .driver-details h3 {
+            font-size: 1.3rem;
+            color: #FFD700;
+        }
+        .driver-details p {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        /* إحصائيات السائق */
+        .driver-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        
+        /* نجوم التقييم */
+        .stars-container {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .stars-label {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            direction: ltr;
+        }
+        .star {
+            font-size: 2.8rem;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.2s;
+        }
+        .star:hover {
+            transform: scale(1.2);
+            color: #FFD700;
+        }
+        .star.active {
+            color: #FFD700;
+            text-shadow: 0 0 15px #FFD700;
+        }
+        
+        /* تعليق */
+        .comment-area {
+            margin: 25px 0;
+        }
+        .comment-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+        .comment-input {
+            width: 100%;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid #FFD700;
+            border-radius: 40px;
+            padding: 15px 20px;
+            color: #fff;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .comment-input:focus {
+            border-color: #FFA500;
+            box-shadow: 0 0 15px rgba(255,215,0,0.3);
+        }
+        
+        /* أزرار سريعة للتقييم */
+        .quick-ratings {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .quick-btn {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid #FFD700;
+            border-radius: 40px;
+            padding: 8px 18px;
+            color: #FFD700;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.8rem;
+        }
+        .quick-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        /* زر الإرسال */
+        .submit-btn {
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 60px;
+            padding: 16px;
+            width: 100%;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255,215,0,0.5);
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* سجل التقييمات السابقة */
+        .history-section {
+            margin-top: 30px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 40px;
+            padding: 20px;
+            border: 1px dashed #FFD700;
+        }
+        .history-title {
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        .review-item {
+            background: #1a1a1a;
+            border-radius: 30px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+        }
+        .review-stars {
+            color: #FFD700;
+            letter-spacing: 3px;
+        }
+        .review-comment {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin: 5px 0;
+        }
+        .review-meta {
+            font-size: 0.7rem;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        /* أزرار التنقل */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .nav-btn {
+            background: #1a1a1a;
+            border: 2px solid #FFD700;
+            border-radius: 50px;
+            padding: 12px;
+            text-align: center;
+            flex: 1;
+            color: #FFD700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .nav-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #333;
+            border-top: 3px solid #FFD700;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 0.8s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div class="rating-container">
+    <div class="rating-card">
+        
+        <!-- رأس الصفحة -->
+        <div class="rating-header">
+            <div class="rating-icon"><i class="fas fa-star"></i></div>
+            <div class="rating-title">قيّم رحلتك</div>
+            <div class="rating-sub">شاركنا تجربتك مع السائق</div>
+        </div>
+        
+        <!-- معلومات السائق -->
+        <div class="driver-info-card">
+            <div class="driver-avatar" id="driverAvatar"><i class="fas fa-user-circle"></i></div>
+            <div class="driver-details">
+                <h3 id="driverName">تحميل...</h3>
+                <p id="driverCar">🚗 رقم العربية</p>
+                <p id="tripRoute">📍 المسار</p>
+            </div>
+        </div>
+        
+        <!-- إحصائيات السائق -->
+        <div class="driver-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="avgRating">0.0</div>
+                <div class="stat-label">متوسط التقييم</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="totalRatings">0</div>
+                <div class="stat-label">عدد التقييمات</div>
+            </div>
+        </div>
+        
+        <!-- نجوم التقييم -->
+        <div class="stars-container">
+            <div class="stars-label">اختر تقييمك</div>
+            <div class="stars" id="starsContainer">
+                <i class="fas fa-star star" data-value="1"></i>
+                <i class="fas fa-star star" data-value="2"></i>
+                <i class="fas fa-star star" data-value="3"></i>
+                <i class="fas fa-star star" data-value="4"></i>
+                <i class="fas fa-star star" data-value="5"></i>
+            </div>
+        </div>
+        
+        <!-- أزرار تقييم سريعة -->
+        <div class="quick-ratings">
+            <span class="quick-btn" data-rating="5">⭐ ممتاز</span>
+            <span class="quick-btn" data-rating="4">👍 جيد جداً</span>
+            <span class="quick-btn" data-rating="3">👌 جيد</span>
+            <span class="quick-btn" data-rating="2">😐 مقبول</span>
+            <span class="quick-btn" data-rating="1">👎 سيئ</span>
+        </div>
+        
+        <!-- تعليق -->
+        <div class="comment-area">
+            <label class="comment-label">تعليقك (اختياري)</label>
+            <textarea class="comment-input" id="commentInput" placeholder="اكتب رأيك..."></textarea>
+        </div>
+        
+        <!-- زر الإرسال -->
+        <button class="submit-btn" id="submitRatingBtn"><i class="fas fa-paper-plane"></i> إرسال التقييم</button>
+        
+        <!-- سجل التقييمات السابقة للراكب -->
+        <div class="history-section">
+            <div class="history-title"><i class="fas fa-history"></i> تقييماتك السابقة</div>
+            <div id="historyList">جاري التحميل...</div>
+        </div>
+        
+        <!-- أزرار التنقل -->
+        <div class="nav-buttons">
+            <div class="nav-btn" onclick="goBack()"><i class="fas fa-arrow-right"></i> رجوع</div>
+            <div class="nav-btn" onclick="window.location.href='passenger.html'"><i class="fas fa-home"></i> الرئيسية</div>
+        </div>
+        
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+    (function() {
+        "use strict";
+        
+        // ---------- قراءة المعاملات ----------
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId');
+        const driverPhone = urlParams.get('to');
+        const driverName = urlParams.get('name') || 'سائق Esy Way';
+        
+        // الراكب الحالي
+        const passenger = JSON.parse(localStorage.getItem('loggedInPassenger')) || {};
+        if (!passenger.phone) {
+            alert('الرجاء تسجيل الدخول');
+            window.location.href = 'passenger.html';
+            return;
+        }
+        
+        // ---------- متغيرات ----------
+        let currentRating = 0;
+        let driverData = { name: driverName, phone: driverPhone, carNum: '', avgRating: 0, totalRatings: 0 };
+        
+        // عناصر DOM
+        const driverNameEl = document.getElementById('driverName');
+        const driverCarEl = document.getElementById('driverCar');
+        const tripRouteEl = document.getElementById('tripRoute');
+        const avgRatingEl = document.getElementById('avgRating');
+        const totalRatingsEl = document.getElementById('totalRatings');
+        const stars = document.querySelectorAll('.star');
+        const quickBtns = document.querySelectorAll('.quick-btn');
+        const submitBtn = document.getElementById('submitRatingBtn');
+        const commentInput = document.getElementById('commentInput');
+        const historyList = document.getElementById('historyList');
+        const driverAvatar = document.getElementById('driverAvatar');
+        
+        // ---------- جلب بيانات السائق ----------
+        async function fetchDriverData() {
+            try {
+                const res = await fetch(`${API_URL}?action=getAllDrivers`);
+                const data = await res.json();
+                const driver = data.drivers?.find(d => d.phone === driverPhone);
+                if (driver) {
+                    driverData = driver;
+                    driverNameEl.innerText = driver.name;
+                    driverCarEl.innerText = `🚗 ${driver.carNum} | ${driver.vehicle || ''}`;
+                    if (driver.image) {
+                        driverAvatar.style.backgroundImage = `url('${driver.image}')`;
+                        driverAvatar.innerHTML = '';
+                    }
+                } else {
+                    driverNameEl.innerText = driverName;
+                }
+            } catch(e) {}
+        }
+        
+        // ---------- جلب تقييمات السائق ----------
+        async function fetchDriverRatings() {
+            try {
+                const res = await fetch(`${API_URL}?action=getAllRatings`);
+                const data = await res.json();
+                const ratings = data.ratings?.filter(r => r.ratedTo === driverPhone) || [];
+                const total = ratings.length;
+                const avg = total > 0 ? (ratings.reduce((s, r) => s + r.rating, 0) / total).toFixed(1) : 0;
+                avgRatingEl.innerText = avg;
+                totalRatingsEl.innerText = total;
+            } catch(e) {}
+        }
+        
+        // ---------- عرض آخر رحلة ----------
+        function displayLastTrip() {
+            const lastTrip = JSON.parse(localStorage.getItem('lastRide')) || {};
+            if (lastTrip.route) {
+                tripRouteEl.innerText = `📍 ${lastTrip.route}`;
+            } else {
+                tripRouteEl.innerText = '📍 المسار غير معروف';
+            }
+        }
+        
+        // ---------- نظام النجوم ----------
+        function highlightStars(value) {
+            stars.forEach(s => {
+                const val = parseInt(s.dataset.value);
+                s.classList.toggle('active', val <= value);
+            });
+        }
+        
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                currentRating = parseInt(star.dataset.value);
+                highlightStars(currentRating);
+            });
+            star.addEventListener('mouseenter', () => {
+                const val = parseInt(star.dataset.value);
+                stars.forEach(s => {
+                    const sv = parseInt(s.dataset.value);
+                    s.style.color = sv <= val ? '#FFD700' : '#555';
+                });
+            });
+            star.addEventListener('mouseleave', () => {
+                stars.forEach(s => {
+                    s.style.color = parseInt(s.dataset.value) <= currentRating ? '#FFD700' : '#555';
+                });
+            });
+        });
+        
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentRating = parseInt(btn.dataset.rating);
+                highlightStars(currentRating);
+            });
+        });
+        
+        // ---------- عرض تقييمات الراكب السابقة ----------
+        function renderUserHistory() {
+            const reviews = JSON.parse(localStorage.getItem('user_ratings')) || [];
+            if (!reviews.length) {
+                historyList.innerHTML = '<p style="color:#aaa; text-align:center;">لا توجد تقييمات سابقة</p>';
+                return;
+            }
+            let html = '';
+            reviews.slice(0, 5).forEach(r => {
+                const starsHtml = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                html += `<div class="review-item">
+                    <div class="review-stars">${starsHtml}</div>
+                    <div class="review-comment">${escapeHtml(r.comment || 'بدون تعليق')}</div>
+                    <div class="review-meta"><span>${r.driverName || 'سائق'}</span><span>${r.date}</span></div>
+                </div>`;
+            });
+            historyList.innerHTML = html;
+        }
+        
+        // ---------- إرسال التقييم ----------
+        submitBtn.addEventListener('click', async () => {
+            if (currentRating === 0) {
+                showToast('الرجاء اختيار تقييم', 'warning');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> جاري الإرسال...';
+            
+            const comment = commentInput.value.trim();
+            const ratingData = {
+                orderId: orderId || 'ORD_' + Date.now(),
+                ratedBy: passenger.phone,
+                ratedTo: driverPhone,
+                rating: currentRating,
+                comment: comment,
+                timestamp: new Date().toISOString()
+            };
+            
+            // حفظ في localStorage
+            const userRatings = JSON.parse(localStorage.getItem('user_ratings')) || [];
+            userRatings.push({
+                ...ratingData,
+                driverName: driverData.name,
+                date: new Date().toLocaleDateString('ar-EG')
+            });
+            localStorage.setItem('user_ratings', JSON.stringify(userRatings));
+            
+            // إرسال إلى API
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({
+                        action: 'submitRating',
+                        ...ratingData
+                    })
+                });
+                showToast('✅ تم إرسال تقييمك، شكراً لك!', 'success');
+                
+                // إعادة ضبط
+                currentRating = 0;
+                highlightStars(0);
+                commentInput.value = '';
+                renderUserHistory();
+                fetchDriverRatings();
+            } catch(e) {
+                showToast('تم حفظ التقييم محلياً', 'info');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التقييم';
+            }
+            
+            // توجيه بعد 2 ثانية
+            setTimeout(() => {
+                window.location.href = 'passenger.html';
+            }, 2000);
+        });
+        
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+        }
+        
+        // ---------- بدء التشغيل ----------
+        async function init() {
+            await fetchDriverData();
+            await fetchDriverRatings();
+            displayLastTrip();
+            renderUserHistory();
+        }
+        init();
+        
+        console.log('✨ rating.html جاهز');
+    })();
+</script>
+</body>
+</html>

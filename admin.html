@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="لوحة تحكم Esy Way - الأدمن">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Esy Way - الأدمن</title>
+    
+    <!-- الخطوط والأيقونات -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- ملف التنسيق الرئيسي -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a0a0a, #000);
+            font-family: 'Tajawal', sans-serif;
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* شاشة الدخول */
+        .login-panel {
+            max-width: 420px;
+            margin: 100px auto;
+            background: rgba(26,26,26,0.95);
+            backdrop-filter: blur(10px);
+            border: 3px solid #FFD700;
+            border-radius: 70px;
+            padding: 45px 35px;
+            text-align: center;
+        }
+        .login-panel h1 { color: #FFD700; font-size: 2.2rem; margin-bottom: 10px; }
+        .login-panel input {
+            width: 100%;
+            padding: 15px;
+            background: #222;
+            border: 2px solid #FFD700;
+            border-radius: 60px;
+            color: #fff;
+            font-size: 1rem;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .login-panel button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(145deg,#FFD700,#FFA500);
+            border: none;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        /* لوحة التحكم */
+        .dashboard-panel { display: none; }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26,26,26,0.9);
+            border: 2px solid #FFD700;
+            border-radius: 80px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(26,26,26,0.85);
+            border: 2px solid #FFD700;
+            border-radius: 60px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-number { font-size: 2.2rem; font-weight: bold; color: #FFD700; }
+        
+        /* طلبات السائقين الجديدة */
+        .pending-section {
+            background: rgba(26,26,26,0.85);
+            border: 2px solid #FFD700;
+            border-radius: 60px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .pending-list { max-height: 300px; overflow-y: auto; }
+        .request-item {
+            background: #0a0a0a;
+            border: 1px solid #FFD700;
+            border-radius: 50px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-approve { background: #10b981; border: none; border-radius: 40px; padding: 8px 20px; color: #fff; cursor: pointer; }
+        .btn-reject { background: #ef4444; border: none; border-radius: 40px; padding: 8px 20px; color: #fff; cursor: pointer; }
+        
+        /* تبويبات */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab {
+            background: rgba(26,26,26,0.85);
+            border: 2px solid #FFD700;
+            border-radius: 50px;
+            padding: 10px 25px;
+            cursor: pointer;
+        }
+        .tab.active { background: #FFD700; color: #000; }
+        .tab-content {
+            display: none;
+            background: rgba(26,26,26,0.85);
+            border: 2px solid #FFD700;
+            border-radius: 50px;
+            padding: 20px;
+        }
+        .tab-content.active { display: block; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #333; }
+        th { color: #FFD700; }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+        .badge-pending { background: #f59e0b; color: #000; }
+        .badge-accepted { background: #10b981; color: #fff; }
+        .badge-rejected { background: #ef4444; color: #fff; }
+        .btn { background: #333; border: 1px solid #FFD700; border-radius: 40px; padding: 5px 12px; cursor: pointer; color: #FFD700; margin: 2px; }
+        .btn-danger { border-color: #ef4444; color: #ef4444; }
+        .btn-danger:hover { background: #ef4444; color: #fff; }
+        .btn:hover { background: #FFD700; color: #000; }
+        .update-box { text-align: center; padding: 20px; }
+        .update-box input { width: 70%; padding: 12px; background: #222; border: 2px solid #FFD700; border-radius: 50px; color: #fff; margin: 15px 0; }
+        .auto-refresh { text-align: center; font-size: 0.7rem; color: #888; margin-top: 15px; }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    
+    <!-- شاشة تسجيل الدخول -->
+    <div id="loginPanel" class="login-panel">
+        <h1>Esy Way</h1>
+        <h2>لوحة التحكم</h2>
+        <input type="password" id="passwordInput" placeholder="الرقم السري">
+        <button id="loginBtn">دخول</button>
+        <div id="loginError" style="color:#ff6b6b; margin-top:10px;"></div>
+    </div>
+    
+    <!-- لوحة التحكم الرئيسية -->
+    <div id="dashboardPanel" class="dashboard-panel">
+        <div class="admin-header">
+            <h1>مرحباً بك في لوحة تحكم Esy Way</h1>
+            <button id="logoutBtn" style="background:#ef4444; border:none; border-radius:50px; padding:10px 20px; color:#fff; cursor:pointer;">خروج</button>
+        </div>
+        
+        <!-- إحصائيات -->
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number" id="totalDrivers">0</div><div>إجمالي السائقين</div></div>
+            <div class="stat-card"><div class="stat-number" id="pendingDrivers">0</div><div>في انتظار القبول</div></div>
+            <div class="stat-card"><div class="stat-number" id="acceptedDrivers">0</div><div>مقبولين</div></div>
+            <div class="stat-card"><div class="stat-number" id="totalPassengers">0</div><div>إجمالي الركاب</div></div>
+        </div>
+        
+        <!-- طلبات سائقين جدد -->
+        <div class="pending-section">
+            <h3 style="color:#FFD700; margin-bottom:15px;">👨‍✈️ طلبات السائقين الجديدة</h3>
+            <div id="pendingDriversList" class="pending-list">جاري التحميل...</div>
+        </div>
+        
+        <!-- تبويبات -->
+        <div class="tabs">
+            <div class="tab active" data-tab="drivers">السائقين</div>
+            <div class="tab" data-tab="passengers">الركاب</div>
+            <div class="tab" data-tab="orders">الطلبات</div>
+            <div class="tab" data-tab="updates">التحديثات</div>
+        </div>
+        
+        <!-- محتوى التبويبات -->
+        <div id="driversTab" class="tab-content active">
+            <table id="driversTable">
+                <thead><tr><th>#</th><th>الاسم</th><th>رقم الهاتف</th><th>رقم العربية</th><th>نوع المركبة</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                <tbody id="driversBody"></tbody>
+            </table>
+        </div>
+        
+        <div id="passengersTab" class="tab-content">
+            <table id="passengersTable">
+                <thead><tr><th>#</th><th>الاسم</th><th>رقم الهاتف</th><th>تاريخ الميلاد</th><th>النوع</th><th>إجراءات</th></tr></thead>
+                <tbody id="passengersBody"></tbody>
+            </table>
+        </div>
+        
+        <div id="ordersTab" class="tab-content">
+            <table id="ordersTable">
+                <thead><tr><th>رقم الطلب</th><th>الراكب</th><th>هاتف الراكب</th><th>من</th><th>إلى</th><th>النوع</th><th>الحالة</th><th>السائق</th></tr></thead>
+                <tbody id="ordersBody"></tbody>
+            </table>
+        </div>
+        
+        <div id="updatesTab" class="tab-content">
+            <div class="update-box">
+                <h3>نشر تحديث جديد</h3>
+                <input type="url" id="updateLinkInput" placeholder="رابط التحديث">
+                <br><button id="publishUpdateBtn">نشر</button>
+                <div id="updateStatus"></div>
+            </div>
+            <div id="updatesList" style="background:#0a0a0a; border-radius:50px; padding:15px; margin-top:15px;"></div>
+        </div>
+        
+        <div class="auto-refresh">🔄 يتم تحديث البيانات تلقائياً كل 5 ثوانٍ</div>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+    (function() {
+        const ADMIN_PASS = 'Alkanas011';
+        let refreshInterval = null;
+        let allDrivers = [], allPassengers = [], allRequests = [];
+        
+        // عناصر
+        const loginPanel = document.getElementById('loginPanel');
+        const dashboardPanel = document.getElementById('dashboardPanel');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        // ---------- دوال API ----------
+        async function fetchAllDrivers() {
+            try {
+                const res = await fetch(`${API_URL}?action=getAllDrivers`);
+                const data = await res.json();
+                allDrivers = data.drivers || [];
+            } catch(e) { allDrivers = []; }
+        }
+        
+        async function fetchAllPassengers() {
+            try {
+                const res = await fetch(`${API_URL}?action=getAllPassengers`);
+                const data = await res.json();
+                allPassengers = data.passengers || [];
+            } catch(e) { allPassengers = []; }
+        }
+        
+        async function fetchAllRequests() {
+            try {
+                const res = await fetch(`${API_URL}?action=getAllRequests`);
+                const data = await res.json();
+                allRequests = data.requests || [];
+            } catch(e) { allRequests = []; }
+        }
+        
+        // ---------- تحديث واجهة الأدمن ----------
+        function updateStats() {
+            const total = allDrivers.length;
+            const pending = allDrivers.filter(d => d.status === 'pending').length;
+            const accepted = allDrivers.filter(d => d.status === 'accepted').length;
+            document.getElementById('totalDrivers').innerText = total;
+            document.getElementById('pendingDrivers').innerText = pending;
+            document.getElementById('acceptedDrivers').innerText = accepted;
+            document.getElementById('totalPassengers').innerText = allPassengers.length;
+        }
+        
+        function renderPendingDrivers() {
+            const pending = allDrivers.filter(d => d.status === 'pending');
+            const container = document.getElementById('pendingDriversList');
+            if (!pending.length) {
+                container.innerHTML = '<div style="text-align:center; padding:20px;">✨ لا توجد طلبات جديدة</div>';
+                return;
+            }
+            let html = '';
+            pending.forEach(d => {
+                html += `<div class="request-item">
+                    <div>
+                        <strong>${escapeHtml(d.name)}</strong><br>
+                        📞 ${escapeHtml(d.phone)}<br>
+                        🚗 ${escapeHtml(d.carNum)} | ${escapeHtml(d.vehicle)}
+                    </div>
+                    <div>
+                        <button class="btn-approve" data-phone="${d.phone}">✅ قبول</button>
+                        <button class="btn-reject" data-phone="${d.phone}">❌ رفض</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            container.querySelectorAll('.btn-approve').forEach(b => b.addEventListener('click', () => updateDriverStatus(b.dataset.phone, 'accepted')));
+            container.querySelectorAll('.btn-reject').forEach(b => b.addEventListener('click', () => updateDriverStatus(b.dataset.phone, 'rejected')));
+        }
+        
+        async function updateDriverStatus(phone, newStatus) {
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'admin_action',
+                        targetSheet: 'Drivers',
+                        phone: phone,
+                        type: newStatus === 'accepted' ? 'accept' : 'reject'
+                    })
+                });
+                showToast(`✅ تم ${newStatus === 'accepted' ? 'قبول' : 'رفض'} السائق`, 'success');
+                refreshAllData();
+            } catch(e) { showToast('❌ فشل', 'error'); }
+        }
+        
+        function renderDriversTable() {
+            const tbody = document.getElementById('driversBody');
+            if (!allDrivers.length) { tbody.innerHTML = '<tr><td colspan="7">لا يوجد سائقين</td></tr>'; return; }
+            let html = '';
+            allDrivers.forEach((d, i) => {
+                const badgeClass = d.status === 'accepted' ? 'badge-accepted' : (d.status === 'rejected' ? 'badge-rejected' : 'badge-pending');
+                const statusText = d.status === 'accepted' ? 'مقبول' : (d.status === 'rejected' ? 'مرفوض' : 'قيد الانتظار');
+                html += `<tr>
+                    <td>${i+1}</td><td>${escapeHtml(d.name)}</td><td>${escapeHtml(d.phone)}</td><td>${escapeHtml(d.carNum)}</td><td>${escapeHtml(d.vehicle)}</td>
+                    <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                    <td>
+                        ${d.status !== 'accepted' ? `<button class="btn" data-action="accept" data-phone="${d.phone}">✅قبول</button>` : ''}
+                        ${d.status !== 'rejected' ? `<button class="btn" data-action="reject" data-phone="${d.phone}">❌رفض</button>` : ''}
+                        <button class="btn btn-danger" data-action="delete" data-phone="${d.phone}">🗑️</button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+        
+        function renderPassengersTable() {
+            const tbody = document.getElementById('passengersBody');
+            if (!allPassengers.length) { tbody.innerHTML = '<tr><td colspan="6">لا يوجد ركاب</td></tr>'; return; }
+            let html = '';
+            allPassengers.forEach((p, i) => {
+                html += `<tr><td>${i+1}</td><td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.phone)}</td><td>${escapeHtml(p.birth)}</td><td>${escapeHtml(p.gender)}</td>
+                    <td><button class="btn btn-danger" data-action="deletePassenger" data-phone="${p.phone}">🗑️</button></td></tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+        
+        function renderOrdersTable() {
+            const tbody = document.getElementById('ordersBody');
+            if (!allRequests.length) { tbody.innerHTML = '<tr><td colspan="8">لا توجد طلبات</td></tr>'; return; }
+            let html = '';
+            allRequests.forEach(r => {
+                html += `<tr><td>${r.id}</td><td>${escapeHtml(r.passenger)}</td><td>${escapeHtml(r.passengerPhone)}</td><td>${escapeHtml(r.pickup)}</td><td>${escapeHtml(r.dropoff)}</td><td>${r.type}</td><td>${r.status}</td><td>${escapeHtml(r.driverName) || '---'}</td></tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+        
+        function renderUpdatesList() {
+            const updates = JSON.parse(localStorage.getItem('app_updates')) || [];
+            const container = document.getElementById('updatesList');
+            if (!updates.length) { container.innerHTML = '<div>لا توجد تحديثات</div>'; return; }
+            let html = '';
+            updates.slice().reverse().forEach(u => {
+                html += `<div style="background:#1a1a1a; border-radius:40px; padding:12px; margin-bottom:8px;">📱 ${escapeHtml(u.link)}<br><span style="font-size:0.7rem;">${new Date(u.date).toLocaleString()}</span></div>`;
+            });
+            container.innerHTML = html;
+        }
+        
+        // ---------- تحديث شامل ----------
+        async function refreshAllData() {
+            await fetchAllDrivers();
+            await fetchAllPassengers();
+            await fetchAllRequests();
+            updateStats();
+            renderPendingDrivers();
+            renderDriversTable();
+            renderPassengersTable();
+            renderOrdersTable();
+            renderUpdatesList();
+        }
+        
+        // ---------- إدارة التبويبات ----------
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+            });
+        });
+        
+        // ---------- نشر تحديث ----------
+        document.getElementById('publishUpdateBtn').addEventListener('click', () => {
+            const link = document.getElementById('updateLinkInput').value.trim();
+            if (!link) { showToast('أدخل رابط التحديث', 'warning'); return; }
+            let updates = JSON.parse(localStorage.getItem('app_updates')) || [];
+            updates.push({ link, date: new Date().toISOString() });
+            localStorage.setItem('app_updates', JSON.stringify(updates));
+            document.getElementById('updateStatus').innerHTML = '<span style="color:#10b981;">✅ تم النشر</span>';
+            document.getElementById('updateLinkInput').value = '';
+            renderUpdatesList();
+        });
+        
+        // ---------- تفويض الأحداث للجداول ----------
+        document.addEventListener('click', async (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            const action = btn.dataset.action;
+            const phone = btn.dataset.phone;
+            if (action === 'accept') await updateDriverStatus(phone, 'accepted');
+            else if (action === 'reject') await updateDriverStatus(phone, 'rejected');
+            else if (action === 'delete') {
+                if (!confirm('حذف السائق؟')) return;
+                await fetch(API_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({ action:'admin_action', targetSheet:'Drivers', phone, type:'delete' }) });
+                refreshAllData();
+            } else if (action === 'deletePassenger') {
+                if (!confirm('حذف الراكب؟')) return;
+                await fetch(API_URL, { method:'POST', mode:'no-cors', body: JSON.stringify({ action:'admin_action', targetSheet:'Passengers', phone, type:'delete' }) });
+                refreshAllData();
+            }
+        });
+        
+        // ---------- تسجيل الدخول والخروج ----------
+        loginBtn.addEventListener('click', () => {
+            if (passwordInput.value === ADMIN_PASS) {
+                loginPanel.style.display = 'none';
+                dashboardPanel.style.display = 'block';
+                refreshAllData();
+                if (refreshInterval) clearInterval(refreshInterval);
+                refreshInterval = setInterval(refreshAllData, 5000);
+            } else {
+                loginError.innerText = '❌ الرقم السري خطأ';
+            }
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            if (refreshInterval) clearInterval(refreshInterval);
+            loginPanel.style.display = 'block';
+            dashboardPanel.style.display = 'none';
+            passwordInput.value = '';
+        });
+        
+        function escapeHtml(s) { return String(s).replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+    })();
+</script>
+</body>
+</html>
