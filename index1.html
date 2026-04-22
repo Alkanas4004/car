@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Esy Way | لوحة الراكب</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #FFD700;
+            --primary-dark: #FFA500;
+            --bg: #0a0a0a;
+            --card: rgba(17, 17, 17, 0.95);
+            --text: #fff;
+            --text-dim: #aaa;
+            --error: #ff4757;
+            --success: #00d26a;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: radial-gradient(circle at 30% 20%, var(--bg), #000);
+            font-family: 'Tajawal', sans-serif;
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .app {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .loading.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0,0,0,0.95);
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            z-index: 10000;
+            transition: transform 0.3s;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.error { border-color: var(--error); color: var(--error); }
+        .toast.success { border-color: var(--success); color: var(--success); }
+
+        /* Auth Container */
+        .auth-container {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            padding: 35px 25px;
+            margin: 30px 0;
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 25px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid var(--primary);
+            border-radius: 50px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000;
+        }
+
+        .form.hidden { display: none; }
+
+        /* Inputs */
+        .input-group {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            padding: 6px 20px 6px 50px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+        }
+
+        .input-group input,
+        .input-group select {
+            background: transparent;
+            border: none;
+            width: 100%;
+            padding: 14px 0;
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .input-group select option {
+            background: #1a1a1a;
+        }
+
+        .birth-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .birth-row .input-group { margin-bottom: 0; }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,215,0,0.3); }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 0.8rem;
+            margin: -10px 20px 15px;
+        }
+
+        /* Dashboard */
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+
+        .welcome {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--primary), #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat {
+            background: #111;
+            border: 1px solid var(--primary);
+            border-radius: 40px;
+            padding: 8px 20px;
+        }
+
+        /* Services */
+        .services {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .service {
+            background: #111;
+            border: 2px solid var(--primary);
+            border-radius: 40px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .service:hover {
+            transform: translateY(-5px);
+            background: #1a1a1a;
+        }
+
+        .service i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        /* Drivers */
+        .drivers-section {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--primary);
+            border-radius: 40px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .driver-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 1px solid var(--primary);
+        }
+
+        .driver-avatar {
+            width: 55px;
+            height: 55px;
+            background: #333;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .rating-bar {
+            background: #333;
+            height: 6px;
+            border-radius: 10px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .rating-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background: #111;
+            border-top: 2px solid var(--primary);
+            padding: 15px;
+            border-radius: 50px;
+            position: sticky;
+            bottom: 10px;
+        }
+
+        .nav-item {
+            cursor: pointer;
+            padding: 8px;
+            transition: var(--transition);
+        }
+
+        .nav-item:hover { color: var(--primary); transform: translateY(-2px); }
+
+        .hidden { display: none !important; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 500px) {
+            .services { gap: 10px; }
+            .service { padding: 15px; }
+            .service i { font-size: 1.5rem; }
+            .welcome h2 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="loading" id="loading"><div class="spinner"></div></div>
+<div id="toast" class="toast"></div>
+
+<div class="app">
+    <!-- Auth Section -->
+    <div id="authSection" class="auth-container">
+        <div class="auth-title">🚀 Esy Way</div>
+        <div class="tabs">
+            <div class="tab active" data-tab="login">تسجيل الدخول</div>
+            <div class="tab" data-tab="register">حساب جديد</div>
+        </div>
+
+        <div id="loginForm" class="form">
+            <div class="input-group">
+                <i class="fas fa-phone"></i>
+                <input type="tel" id="loginPhone" placeholder="رقم الهاتف" inputmode="numeric">
+            </div>
+            <button class="btn" id="loginBtn">دخول</button>
+        </div>
+
+        <div id="registerForm" class="form hidden">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="regName" placeholder="الاسم الكامل">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-phone"></i>
+                <input type="tel" id="regPhone" placeholder="رقم الهاتف">
+            </div>
+            <div class="birth-row">
+                <div class="input-group"><i class="fas fa-calendar-day"></i><select id="regDay"></select></div>
+                <div class="input-group"><i class="fas fa-calendar-alt"></i><select id="regMonth"></select></div>
+                <div class="input-group"><i class="fas fa-calendar"></i><select id="regYear"></select></div>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-venus-mars"></i>
+                <select id="regGender"><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+            </div>
+            <div id="phoneError" class="error-msg hidden"></div>
+            <button class="btn" id="registerBtn">إنشاء حساب</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <div class="welcome">
+            <p>🌟 مرحباً بك في</p>
+            <h2 id="userName">Esy Way</h2>
+        </div>
+
+        <div class="stats">
+            <div class="stat"><i class="fas fa-car"></i> <span id="driversCount">0</span> سائق</div>
+            <div class="stat"><i class="fas fa-road"></i> <span id="tripsCount">0</span> رحلة</div>
+            <div class="stat"><i class="fas fa-star"></i> <span id="userRating">5.0</span></div>
+        </div>
+
+        <div class="services">
+            <div class="service" data-trip="menia-demshier"><i class="fas fa-arrow-left"></i><div>المنيا ← دمشير</div><small>20 جنيه</small></div>
+            <div class="service" data-trip="demshier-menia"><i class="fas fa-arrow-right"></i><div>دمشير ← المنيا</div><small>20 جنيه</small></div>
+            <div class="service" data-action="support"><i class="fas fa-headset"></i><div>الدعم الفني</div></div>
+            <div class="service" data-action="chat"><i class="fas fa-comments"></i><div>المحادثات</div></div>
+        </div>
+
+        <div class="drivers-section">
+            <h3><i class="fas fa-users"></i> السائقين النشطين</h3>
+            <div id="driversList" style="margin-top: 15px;"></div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" data-nav="home"><i class="fas fa-home"></i></div>
+            <div class="nav-item" data-nav="history"><i class="fas fa-history"></i></div>
+            <div class="nav-item" data-nav="profile"><i class="fas fa-user"></i></div>
+            <div class="nav-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ========== State ==========
+        let currentUser = null;
+
+        // ========== DOM Elements ==========
+        const loading = document.getElementById('loading');
+        const toast = document.getElementById('toast');
+        const authSection = document.getElementById('authSection');
+        const dashboard = document.getElementById('dashboard');
+        
+        // Auth
+        const loginPhone = document.getElementById('loginPhone');
+        const loginBtn = document.getElementById('loginBtn');
+        const regName = document.getElementById('regName');
+        const regPhone = document.getElementById('regPhone');
+        const regDay = document.getElementById('regDay');
+        const regMonth = document.getElementById('regMonth');
+        const regYear = document.getElementById('regYear');
+        const regGender = document.getElementById('regGender');
+        const registerBtn = document.getElementById('registerBtn');
+        const phoneError = document.getElementById('phoneError');
+
+        // Dashboard
+        const userName = document.getElementById('userName');
+        const driversCount = document.getElementById('driversCount');
+        const tripsCount = document.getElementById('tripsCount');
+        const userRating = document.getElementById('userRating');
+        const driversList = document.getElementById('driversList');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // ========== Utilities ==========
+        function showLoading(show) {
+            show ? loading.classList.add('active') : loading.classList.remove('active');
+        }
+
+        function showToastMessage(message, type = 'info') {
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function validatePhone(phone) {
+            const clean = phone.replace(/\D/g, '');
+            if (clean.length !== 11) return false;
+            const prefix = clean.substring(0, 3);
+            return ['010', '011', '012', '015'].includes(prefix);
+        }
+
+        function formatPhone(phone) {
+            return phone.replace(/\D/g, '');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // ========== Storage ==========
+        function getPassengers() {
+            return JSON.parse(localStorage.getItem('esyway_passengers') || '[]');
+        }
+
+        function savePassengers(passengers) {
+            localStorage.setItem('esyway_passengers', JSON.stringify(passengers));
+        }
+
+        function saveSession(user) {
+            localStorage.setItem('esyway_passenger_session', JSON.stringify(user));
+            currentUser = user;
+        }
+
+        function getSession() {
+            const data = localStorage.getItem('esyway_passenger_session');
+            return data ? JSON.parse(data) : null;
+        }
+
+        function clearSession() {
+            localStorage.removeItem('esyway_passenger_session');
+            currentUser = null;
+        }
+
+        // ========== Date Helpers ==========
+        function populateDates() {
+            for (let i = 1; i <= 31; i++) regDay.innerHTML += `<option value="${i}">${i}</option>`;
+            const months = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+            months.forEach((m, i) => regMonth.innerHTML += `<option value="${i+1}">${m}</option>`);
+            const year = new Date().getFullYear();
+            for (let i = year; i >= 1940; i--) regYear.innerHTML += `<option value="${i}">${i}</option>`;
+        }
+
+        // ========== Auth ==========
+        function handleLogin() {
+            const phone = loginPhone.value.trim();
+            if (!validatePhone(phone)) {
+                showToastMessage('رقم الهاتف غير صحيح', 'error');
+                return;
+            }
+
+            const cleanPhone = formatPhone(phone);
+            const passengers = getPassengers();
+            const user = passengers.find(p => p.phone === cleanPhone);
+
+            if (user) {
+                saveSession(user);
+                showToastMessage(`مرحباً ${user.name}`, 'success');
+                renderDashboard();
+            } else {
+                showToastMessage('لا يوجد حساب بهذا الرقم', 'error');
+            }
+        }
+
+        function handleRegister() {
+            const name = regName.value.trim();
+            const phone = regPhone.value.trim();
+            const day = regDay.value;
+            const month = regMonth.value;
+            const year = regYear.value;
+            const gender = regGender.value;
+
+            if (!name || !phone || !day || !month || !year) {
+                showToastMessage('جميع الحقول مطلوبة', 'error');
+                return;
+            }
+
+            if (name.length < 3) {
+                showToastMessage('الاسم قصير جداً', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                phoneError.classList.remove('hidden');
+                phoneError.innerText = 'رقم الهاتف غير صالح';
+                return;
+            }
+            phoneError.classList.add('hidden');
+
+            const cleanPhone = formatPhone(phone);
+            const passengers = getPassengers();
+            
+            if (passengers.find(p => p.phone === cleanPhone)) {
+                showToastMessage('هذا الرقم مسجل مسبقاً', 'error');
+                return;
+            }
+
+            const newUser = {
+                id: Date.now().toString(),
+                name: escapeHtml(name),
+                phone: cleanPhone,
+                birth: `${day}/${month}/${year}`,
+                gender: gender,
+                status: 'active',
+                registeredAt: new Date().toISOString(),
+                trips: 0,
+                rating: 5.0
+            };
+
+            passengers.push(newUser);
+            savePassengers(passengers);
+            saveSession(newUser);
+            
+            showToastMessage('تم إنشاء الحساب بنجاح!', 'success');
+            renderDashboard();
+        }
+
+        // ========== Dashboard ==========
+        function getMockDrivers() {
+            return [
+                { id: 1, name: 'أحمد محمد', carNum: 'س ص ط 123', location: 'في الموقف', rating: 4.8 },
+                { id: 2, name: 'محمود علي', carNum: 'ع ب ج 456', location: 'متجه للمنيا', rating: 4.5 },
+                { id: 3, name: 'خالد حسن', carNum: 'د ه و 789', location: 'في الموقف', rating: 4.9 }
+            ];
+        }
+
+        function renderDrivers() {
+            const drivers = getMockDrivers();
+            driversCount.innerText = drivers.length;
+            
+            if (drivers.length === 0) {
+                driversList.innerHTML = '<p style="text-align:center">لا يوجد سائقين نشطين</p>';
+                return;
+            }
+
+            driversList.innerHTML = drivers.map(driver => `
+                <div class="driver-card">
+                    <div class="driver-avatar">🚗</div>
+                    <div style="flex:1">
+                        <strong>${escapeHtml(driver.name)}</strong>
+                        <div style="font-size:0.8rem; color:#aaa;">${escapeHtml(driver.carNum)}</div>
+                        <div style="font-size:0.8rem;"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(driver.location)}</div>
+                        <div class="rating-bar"><div class="rating-fill" style="width: ${(driver.rating/5)*100}%"></div></div>
+                        <div style="font-size:0.75rem;">⭐ ${driver.rating}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function requestTrip(tripType) {
+            if (!currentUser) return;
+            
+            const tripName = tripType === 'menia-demshier' ? 'المنيا → دمشير' : 'دمشير → المنيا';
+            
+            if (confirm(`تأكيد طلب رحلة: ${tripName}\nالسعر: 20 جنيه`)) {
+                showLoading(true);
+                showToastMessage('جاري البحث عن سائق...', 'info');
+                
+                setTimeout(() => {
+                    showLoading(false);
+                    showToastMessage('تم العثور على سائق! سيتم إشعارك', 'success');
+                    
+                    // Update trips count
+                    const passengers = getPassengers();
+                    const index = passengers.findIndex(p => p.id === currentUser.id);
+                    if (index !== -1) {
+                        passengers[index].trips = (passengers[index].trips || 0) + 1;
+                        savePassengers(passengers);
+                        currentUser.trips = passengers[index].trips;
+                        tripsCount.innerText = currentUser.trips;
+                    }
+                }, 2000);
+            }
+        }
+
+        function renderDashboard() {
+            if (!currentUser) return;
+            
+            authSection.classList.add('hidden');
+            dashboard.classList.add('active');
+            
+            userName.innerText = currentUser.name;
+            tripsCount.innerText = currentUser.trips || 0;
+            userRating.innerText = (currentUser.rating || 5.0).toFixed(1);
+            
+            renderDrivers();
+        }
+
+        function handleLogout() {
+            if (confirm('تسجيل الخروج؟')) {
+                clearSession();
+                showToastMessage('تم تسجيل الخروج', 'success');
+                setTimeout(() => window.location.reload(), 500);
+            }
+        }
+
+        // ========== Tab Switching ==========
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+        }
+
+        // ========== Event Listeners ==========
+        function initEventListeners() {
+            loginBtn.addEventListener('click', handleLogin);
+            registerBtn.addEventListener('click', handleRegister);
+            logoutBtn.addEventListener('click', handleLogout);
+            
+            loginPhone.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+            
+            document.querySelectorAll('.service[data-trip]').forEach(service => {
+                service.addEventListener('click', () => requestTrip(service.dataset.trip));
+            });
+            
+            document.querySelectorAll('.service[data-action]').forEach(service => {
+                service.addEventListener('click', () => {
+                    showToastMessage('قيد التطوير قريباً', 'info');
+                });
+            });
+            
+            document.querySelectorAll('.nav-item[data-nav]').forEach(nav => {
+                nav.addEventListener('click', () => {
+                    if (nav.dataset.nav === 'home') window.scrollTo({ top: 0, behavior: 'smooth' });
+                    else showToastMessage('قيد التطوير', 'info');
+                });
+            });
+        }
+
+        // ========== Init ==========
+        function init() {
+            populateDates();
+            initEventListeners();
+            
+            const session = getSession();
+            if (session) {
+                currentUser = session;
+                renderDashboard();
+            }
+        }
+
+        init();
+    })();
+</script>
+
+</body>
+</html>
