@@ -3,24 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="تطبيق Esy Way - النقل الذكي">
+    <meta name="description" content="تطبيق Esy Way - النقل الذكي بين المنيا ودمشير - توصيل آمن وسريع">
+    <meta name="keywords" content="توصيل, منيا, دمشير, سيارة, نقل, Esy Way">
+    <meta name="author" content="Esy Way">
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Esy Way - الرئيسية</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Esy Way">
     
-    <!-- الخطوط والأيقونات -->
+    <title>Esy Way | النقل الذكي</title>
+    
+    <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- ملف التنسيق الرئيسي -->
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    
     <style>
-        /* تنسيقات خاصة بالصفحة الرئيسية */
+        /* Enhanced Professional Styles */
+        :root {
+            --primary-gold: #FFD700;
+            --primary-orange: #FFA500;
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(17, 17, 17, 0.95);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: radial-gradient(circle at 30% 10%, #0a0a0a, #000);
+            background: radial-gradient(circle at 30% 10%, #0a0a0a, #000000);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -29,115 +50,270 @@
             font-family: 'Tajawal', sans-serif;
             color: #fff;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255,215,0,0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .logo-container {
             text-align: center;
             margin-bottom: 3rem;
-            animation: fadeInDown 0.8s;
+            animation: fadeInDown 0.8s ease-out;
+            position: relative;
+            z-index: 1;
         }
+
         .app-logo {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 900;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
+            background: linear-gradient(135deg, var(--primary-gold), var(--primary-orange));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             letter-spacing: 6px;
-            text-shadow: 0 0 30px rgba(255,215,0,0.5);
+            text-shadow: 0 0 30px rgba(255,215,0,0.3);
+            position: relative;
         }
+
+        .app-logo::after {
+            content: '●';
+            position: absolute;
+            font-size: 1rem;
+            color: var(--primary-gold);
+            top: -10px;
+            right: -15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
         .app-tagline {
             color: #ccc;
             font-size: 1.2rem;
             margin-top: 0.5rem;
+            font-weight: 500;
         }
+
         .role-selector {
             display: flex;
             gap: 2rem;
             flex-wrap: wrap;
             justify-content: center;
             margin: 2rem 0;
+            position: relative;
+            z-index: 1;
         }
+
         .role-card {
-            background: rgba(17, 17, 17, 0.9);
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
-            border: 2px solid #FFD700;
+            border: 2px solid var(--primary-gold);
             border-radius: 60px;
             padding: 2rem 2.5rem;
-            min-width: 180px;
+            min-width: 200px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition-smooth);
             box-shadow: 0 0 20px rgba(255,215,0,0.2);
+            position: relative;
+            overflow: hidden;
         }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, var(--primary-gold), transparent);
+            transition: width 0.6s, height 0.6s;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+
+        .role-card:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
         .role-card:hover {
-            transform: translateY(-8px);
-            background: #FFD700;
+            transform: translateY(-10px);
+            background: var(--primary-gold);
             color: #000;
-            box-shadow: 0 0 40px #FFD700;
+            box-shadow: 0 0 40px var(--primary-gold);
         }
+
         .role-card i {
             font-size: 3.5rem;
-            color: #FFD700;
+            color: var(--primary-gold);
             margin-bottom: 1rem;
+            transition: var(--transition-smooth);
         }
+
         .role-card:hover i {
             color: #000;
+            transform: scale(1.1);
         }
+
         .role-card h2 {
             font-size: 2rem;
             margin-bottom: 0.5rem;
+            font-weight: 800;
         }
+
         .role-card p {
             font-size: 0.9rem;
             opacity: 0.9;
         }
+
         .features {
             display: flex;
             gap: 2rem;
             margin-top: 3rem;
+            position: relative;
+            z-index: 1;
         }
+
         .feature-item {
             text-align: center;
             color: #aaa;
+            transition: var(--transition-smooth);
+            cursor: default;
         }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            color: var(--primary-gold);
+        }
+
         .feature-item i {
             font-size: 2rem;
-            color: #FFD700;
+            color: var(--primary-gold);
             margin-bottom: 0.5rem;
+            display: block;
         }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--primary-gold);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0,0,0,0.9);
+            color: var(--primary-gold);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 500;
+            z-index: 10000;
+            transition: transform 0.3s;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--primary-gold);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @media (max-width: 500px) {
+
+        /* Responsive */
+        @media (max-width: 600px) {
             .app-logo { font-size: 3rem; }
-            .role-card { padding: 1.5rem; }
+            .role-card { padding: 1.5rem; min-width: 150px; }
+            .role-card i { font-size: 2.5rem; }
+            .role-card h2 { font-size: 1.5rem; }
+            .features { gap: 1rem; }
+            .feature-item i { font-size: 1.5rem; }
+            .feature-item div { font-size: 0.8rem; }
+        }
+
+        @media (max-width: 480px) {
+            .role-selector { gap: 1rem; }
+            .role-card { padding: 1rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- شعار التطبيق -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Logo Section -->
     <div class="logo-container">
         <div class="app-logo">Esy Way</div>
         <div class="app-tagline">النقل الذكي بين المنيا ودمشير</div>
     </div>
 
-    <!-- اختيار الدور -->
+    <!-- Role Selection -->
     <div class="role-selector">
-        <div class="role-card" onclick="window.location.href='passenger.html'">
+        <div class="role-card" data-role="passenger">
             <i class="fas fa-user"></i>
             <h2>راكب</h2>
             <p>اطلب رحلتك الآن</p>
         </div>
-        <div class="role-card" onclick="window.location.href='driver.html'">
+        <div class="role-card" data-role="driver">
             <i class="fas fa-car"></i>
             <h2>سائق</h2>
             <p>انضم إلينا وابدأ العمل</p>
         </div>
     </div>
 
-    <!-- مميزات سريعة -->
+    <!-- Features -->
     <div class="features">
         <div class="feature-item">
             <i class="fas fa-bolt"></i>
@@ -152,22 +328,210 @@
             <div>أسعار تنافسية</div>
         </div>
     </div>
-    <script src="support-widget.js"></script>
+
+    <div id="toast" class="toast"></div>
 
     <script>
-        // التحقق من وجود جلسة وتوجيه تلقائي
-        if (localStorage.getItem('loggedInPassenger')) {
-            window.location.href = 'passenger.html';
-        } else if (localStorage.getItem('loggedInDriver')) {
-            const driver = JSON.parse(localStorage.getItem('loggedInDriver'));
-            if (driver.status === 'accepted') {
-                window.location.href = 'driver.html';
+        // ============================================
+        // Professional JavaScript Module
+        // ============================================
+        
+        (function() {
+            'use strict';
+            
+            // Config
+            const CONFIG = {
+                appName: 'Esy Way',
+                version: '2.0.0',
+                storageKeys: {
+                    passenger: 'loggedInPassenger',
+                    driver: 'loggedInDriver'
+                },
+                routes: {
+                    passenger: 'passenger.html',
+                    driver: 'driver.html'
+                }
+            };
+            
+            // DOM Elements
+            const elements = {
+                loadingOverlay: document.getElementById('loadingOverlay'),
+                toast: document.getElementById('toast'),
+                roleCards: document.querySelectorAll('.role-card')
+            };
+            
+            // Helper Functions
+            const showLoading = (show) => {
+                if (show) {
+                    elements.loadingOverlay.classList.add('active');
+                } else {
+                    elements.loadingOverlay.classList.remove('active');
+                }
+            };
+            
+            const showToast = (message, duration = 3000) => {
+                const toast = elements.toast;
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, duration);
+            };
+            
+            const getStorageData = (key) => {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : null;
+                } catch (error) {
+                    console.error(`Error parsing storage key ${key}:`, error);
+                    return null;
+                }
+            };
+            
+            const setStorageData = (key, value) => {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                    return true;
+                } catch (error) {
+                    console.error(`Error setting storage key ${key}:`, error);
+                    return false;
+                }
+            };
+            
+            // Check if user is already logged in
+            const checkExistingSession = () => {
+                const passengerSession = getStorageData(CONFIG.storageKeys.passenger);
+                if (passengerSession) {
+                    showToast('مرحباً بعودتك! جاري التوجيه...');
+                    setTimeout(() => {
+                        window.location.href = CONFIG.routes.passenger;
+                    }, 1000);
+                    return true;
+                }
+                
+                const driverSession = getStorageData(CONFIG.storageKeys.driver);
+                if (driverSession && driverSession.status === 'accepted') {
+                    showToast('مرحباً سائق! جاري التوجيه...');
+                    setTimeout(() => {
+                        window.location.href = CONFIG.routes.driver;
+                    }, 1000);
+                    return true;
+                } else if (driverSession && driverSession.status === 'pending') {
+                    showToast('حسابك قيد المراجعة من قبل الإدارة', 4000);
+                }
+                
+                return false;
+            };
+            
+            // Handle role selection with animation
+            const handleRoleSelection = (role) => {
+                showLoading(true);
+                
+                // Log analytics event (for future implementation)
+                console.log(`[Analytics] User selected role: ${role} at ${new Date().toISOString()}`);
+                
+                // Simulate network delay for smooth transition
+                setTimeout(() => {
+                    showLoading(false);
+                    
+                    if (role === 'passenger') {
+                        window.location.href = CONFIG.routes.passenger;
+                    } else if (role === 'driver') {
+                        window.location.href = CONFIG.routes.driver;
+                    }
+                }, 500);
+            };
+            
+            // Add event listeners to role cards
+            const initEventListeners = () => {
+                elements.roleCards.forEach(card => {
+                    const role = card.getAttribute('data-role');
+                    card.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        handleRoleSelection(role);
+                    });
+                    
+                    // Add keyboard accessibility
+                    card.setAttribute('tabindex', '0');
+                    card.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleRoleSelection(role);
+                        }
+                    });
+                });
+            };
+            
+            // PWA Installation Handler
+            const initPWA = () => {
+                let deferredPrompt;
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    showToast('📱 ثبّت التطبيق على جهازك لتجربة أفضل!', 5000);
+                });
+            };
+            
+            // Performance monitoring
+            const reportPerformance = () => {
+                if ('performance' in window && 'getEntriesByType' in performance) {
+                    const paintMetrics = performance.getEntriesByType('paint');
+                    const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                    console.log(`[Performance] Page load time: ${loadTime}ms`);
+                }
+            };
+            
+            // Check for app updates (Service Worker)
+            const checkForUpdates = () => {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        registration.update();
+                    });
+                }
+            };
+            
+            // Initialize App
+            const init = () => {
+                reportPerformance();
+                initEventListeners();
+                initPWA();
+                checkForUpdates();
+                
+                // Check session after a small delay to ensure smooth UI
+                setTimeout(() => {
+                    checkExistingSession();
+                }, 100);
+                
+                // Add smooth page transition
+                document.body.style.opacity = '0';
+                document.body.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    document.body.style.opacity = '1';
+                }, 100);
+            };
+            
+            // Start the app when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
             } else {
-                // إذا كان pending، نتركه في الصفحة الرئيسية
-                console.log('حساب السائق قيد الانتظار');
+                init();
             }
+        })();
+    </script>
+    
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
         }
     </script>
-
 </body>
 </html>
